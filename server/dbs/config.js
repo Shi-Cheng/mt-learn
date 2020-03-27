@@ -13,20 +13,19 @@ export default {
       return 6379
     }
   },
-  // POP3/SMTP服务 qfsxuimvloovbjej  IMAP/SMTP服务 mfyytqdduxcjcagh
+  // qq POP3/SMTP服务 qfsxuimvloovbjej  IMAP/SMTP服务 mfyytqdduxcjcagh 206301534@qq.com
   // 生成授权码  hkzptaifchgwbidc
+
+  //IMAP/SMTP服务 163 AYZHZHFLUVCECUQN   CZOEDYCFHHATMUAK x_pan2016@163.com
   smtp: {
     get host() {
       return 'smtp.qq.com'
     },
     get user() {
-      return '206301534@qq.com'
+      return '206301534'
     },
     get pass() {
       return 'hkzptaifchgwbidc'
-    },
-    get port() {
-      return 587
     },
     get secure() {
       return false
