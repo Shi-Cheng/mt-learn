@@ -38,6 +38,7 @@
           class="btn-login"
           type="success"
           size="mini"
+          :loading="loading"
           @click="login">登录</el-button>
       </div>
     </div>
@@ -45,6 +46,9 @@
 </template>
 
 <script>
+  import CryptoJS from 'crypto-js'
+  import { STATUS_OK, ERROR_OK } from '../server/config/auth'
+
   export default {
     name: 'Login',
     data() {
@@ -52,18 +56,48 @@
         checked: '',
         username: '',
         password: '',
-        error: ''
+        error: '',
+        loading: false
       }
     },
     layout: 'blank',
     methods: {
       login() {
-
+        const self = this
+        if (!self.username || !self.password) {
+          self.$message({
+            message: '登录名或密码不能为空',
+            type: 'error'
+          })
+        }
+        self.loading = true
+        const params = {
+          username: encodeURIComponent(self.username),
+          password: CryptoJS.MD5(self.password).toString()
+        }
+        self.$axios.post('/users/signin', params).then((res) => {
+          self.loading = false
+          if (res.status === STATUS_OK) {
+            if (res.data && res.data.code === ERROR_OK) {
+              self.$message({
+                message: '登录成功',
+                type: 'success'
+              })
+              setTimeout(() => {
+                window.location.href = '/'
+              }, 1000)
+            } else {
+              self.error = res.data.msg
+            }
+          } else {
+            self.error = '服务器出错'
+          }
+        })
       }
     }
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/css/login/index";
 </style>

@@ -12,7 +12,6 @@ import Redis from 'koa-redis'
 import json from 'koa-json'
 
 const app = new Koa()
-console.log('dbs===>' + dbConfig.dbs)
 mongoose.connect(dbConfig.dbs, {
   useNewUrlParser: true
 })
@@ -28,6 +27,7 @@ app.use(json())
 // 处理登录相关的业务
 app.use(passport.initialize())
 app.use(passport.session())
+
 // 连接数据库
 var db = mongoose.connection
 db.on('error', console.error.bind(console, '====== 数据库连接失败 ====='))

@@ -1,19 +1,41 @@
+<!--
+  Copyright Dingxuan. All Rights Reserved.
+  description : 基于区块链分布式PKI管理系统
+  @author 潘世成
+  @date 2020/3/28
+  @company Dingxuan
+-->
 <template>
   <div class="page-index">
-    pages-index
+    <el-row>
+      <el-col :span="5">
+        <my-menu/>
+      </el-col>
+      <el-col :span="19">
+        <my-life/>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="24">
+        <my-artistic/>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-
+import MyMenu from '../components/index/menu'
+import MyLife from '../components/index/life'
+import MyArtistic from '../components/index/artistic'
 export default {
   components: {
-    Logo
+    MyMenu,
+    MyLife,
+    MyArtistic
   }
 }
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="scss">
+  @import "../assets/css/index/index.scss";
 </style>

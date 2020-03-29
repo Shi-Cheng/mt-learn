@@ -20,32 +20,41 @@ router.post('/signup', async (ctx) => {
   const {
     username,
     password,
-    email,
-    code
+    email
   } = ctx.request.body
-  if (code) {
-    const saveCode = await Store.hget(`nodemail: ${username}`, 'code')
-    const saveExpire = await Store.hget(`nodemail: ${username}`, 'expire')
-    if (code === saveCode) {
-      if (new Date().getTime() - saveExpire > 0) {
-        ctx.body = {
-          code: -1,
-          msg: '验证码已过期，请重新尝试'
-        }
-        return false
-      }
-    } else {
-      ctx.body = {
-        code: -1,
-        msg: '请填写正确的验证码'
-      }
-    }
-  } else {
+  const saveExpire = await Store.hget(`nodemail: ${username}`, 'expire')
+
+  if (new Date().getTime() - saveExpire > 0) {
     ctx.body = {
       code: -1,
-      msg: '请填写验证码'
+      msg: '验证码已过期，请重新尝试'
     }
+    return false
   }
+  // if (code) {
+  //   const saveCode = await Store.hget(`nodemail: ${username}`, 'code')
+  //   const saveExpire = await Store.hget(`nodemail: ${username}`, 'expire')
+  //   if (code === saveCode) {
+  //     if (new Date().getTime() - saveExpire > 0) {
+  //       ctx.body = {
+  //         code: -1,
+  //         msg: '验证码已过期，请重新尝试'
+  //       }
+  //       return false
+  //     }
+  //   } else {
+  //     ctx.body = {
+  //       code: -1,
+  //       msg: '请填写正确的验证码'
+  //     }
+  //   }
+  // } else {
+  //   ctx.body = {
+  //     code: -1,
+  //     msg: '请填写验证码'
+  //   }
+  // }
+  //
   const user = await Users.find({ username })
   if (user.length) {
     ctx.body = {
@@ -102,9 +111,9 @@ router.post('/signin', async (ctx, next) => {
   })(ctx, next)
 })
 
+// nodemailer 接口一直出现问题
 router.post('/verify', async (ctx, next) => {
   const username = ctx.request.body.username
-  console.log(username)
   const saveExpire = await Store.hget(`nodemail:${username}`, 'expire')
   if (saveExpire && new Date().getTime() - saveExpire < 0) {
     ctx.body = {
@@ -115,13 +124,12 @@ router.post('/verify', async (ctx, next) => {
   }
   const transporter = nodeMailer.createTransport({
     host: Email.smtp.host,
-    port: 587,
-    secure: Email.smtp.secure,
+    port: 465,
+    secure: true,
     auth: {
       user: Email.smtp.user,
       pass: Email.smtp.pass
     }
-
   })
   const ko = {
     code: Email.smtp.code,
@@ -130,13 +138,12 @@ router.post('/verify', async (ctx, next) => {
     user: ctx.request.body.username
   }
 
-  const mailOptions = {
+  const options = {
     form: `"认证邮件" <${Email.smtp.user}>`,
     to: ko.email,
-    subject: '注册码',
-    html: `您的邀请码是${ko.code}`
+    subject: '注册码'
   }
-  await transporter.sendMail(mailOptions, (error, info) => {
+  await transporter.sendMail(options, (error, info) => {
     if (error) {
       console.log('error')
       return console.log(error)
@@ -165,7 +172,7 @@ router.get('/exit', async (ctx, next) => {
 
 router.get('/getUser', async (ctx) => {
   if (ctx.isAuthenticated()) {
-    const { username, email } = ctx.session.password.user
+    const { username, email } = ctx.session.passport.user
     ctx.body = {
       user: username,
       email
@@ -176,15 +183,6 @@ router.get('/getUser', async (ctx) => {
       email: ''
     }
   }
-  // const users = await Users.find()
-  // ctx.body = {
-  //   users: users.map(item => {
-  //     return {
-  //       name: item.username,
-  //       email: item.email
-  //     }
-  //   })
-  // }
 })
 
 export default router

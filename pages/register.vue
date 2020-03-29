@@ -25,12 +25,12 @@
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="registerForm.email" />
-          <el-button size="mini" round @click="sendMsg">发送验证码</el-button>
-          <span class="status">{{ statusMsg }}</span>
+          <!--<el-button size="mini" round @click="sendMsg">发送验证码</el-button>-->
+          <!--<span class="status">{{ statusMsg }}</span>-->
         </el-form-item>
-        <el-form-item label="验证码" prop="code">
-          <el-input v-model="registerForm.code" maxlength="4" />
-        </el-form-item>
+        <!--<el-form-item label="验证码" prop="code">-->
+        <!--<el-input v-model="registerForm.code" maxlength="4" />-->
+        <!--</el-form-item>-->
         <el-form-item label="密码" prop="pwd">
           <el-input v-model="registerForm.pwd" type="password" />
         </el-form-item>
@@ -38,7 +38,7 @@
           <el-input v-model="registerForm.cpwd" type="password" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="register">同意以下协议并注册</el-button>
+          <el-button type="primary" :loading="loading" @click="register">同意以下协议并注册</el-button>
           <div class="error">{{ error }}</div>
         </el-form-item>
       </el-form>
@@ -48,6 +48,8 @@
 
 <script>
   import CryptoJS from 'crypto-js'
+  import { STATUS_OK, ERROR_OK } from '../server/config/auth'
+
   export default {
     name: 'Register',
     data() {
@@ -97,7 +99,8 @@
             },
             trigger: 'blur'
           }]
-        }
+        },
+        loading: false
       }
     },
     layout: 'blank',
@@ -145,12 +148,41 @@
         })
       },
       register() {
-
+        const self = this
+        self.$refs.registerForm.validate((valid) => {
+          if (valid) {
+            self.loading = true
+            const params = {
+              username: window.encodeURIComponent(self.registerForm.name),
+              password: CryptoJS.MD5(self.registerForm.pwd).toString(),
+              email: self.registerForm.email
+            }
+            self.$axios.post('/users/signup', params).then((res) => {
+              self.loading = false
+              if (res.status === STATUS_OK) {
+                if (res.data && res.data.code === ERROR_OK) {
+                  self.$message({
+                    message: '恭喜注册成功！',
+                    type: 'success'
+                  })
+                  window.location.href = '/login'
+                } else {
+                  self.error = res.data.msg
+                }
+              } else {
+                self.error = `服务器出错，错误码：${res.status}`
+              }
+              setTimeout(() => {
+                self.error = ''
+              }, 1500)
+            })
+          }
+        })
       }
     }
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../assets/css/register/index.scss";
 </style>

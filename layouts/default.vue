@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import MtHeader from '../components/public/header/header'
+  import MtHeader from '../components/public/header/index'
   import MtFooter from '../components/public/footer/footer'
   export default {
     components: {

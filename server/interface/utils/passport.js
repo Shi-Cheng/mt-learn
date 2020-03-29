@@ -1,6 +1,7 @@
 // Copyright Dingxuan. All Rights Reserved.
 //   description : 基于区块链分布式PKI管理系统
 // @author 潘世成
+// passport 策略
 // @date 2020/3/25
 // @company Dingxuan
 import passport from 'koa-passport'
