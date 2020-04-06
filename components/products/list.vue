@@ -56,7 +56,6 @@ export default {
   },
   async asyncData({ app }) {
     const { data } = await app.$axios.get('searchList')
-    console.log(data.list)
     return { items: data.list }
   },
   methods: {

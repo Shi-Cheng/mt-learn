@@ -46,7 +46,6 @@ export default {
     }
   },
   mounted() {
-    console.info('areas', this.areas)
   }
 }
 </script>

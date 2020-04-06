@@ -30,19 +30,21 @@
 </template>
 
 <script>
-export default {
-  props: {
-    meta: {
-      type: Object,
-      default: () => {
-        return {}
+  import { STATUS_OK, ERROR_OK } from '../../server/config/auth'
+
+  export default {
+    props: {
+      meta: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
-    }
-  },
-  methods: {
-    createCart: async function() {
-      const self = this
-      const {
+    },
+    methods: {
+      createCart: async function() {
+        const self = this
+        const {
         status,
         data: {
           code,
@@ -58,14 +60,14 @@ export default {
           }
         }
       })
-      if (status === 200 && code === 0) {
-        window.location.href = `/cart/?id=${id}`
-      } else {
-        console.log('error')
+        if (status === STATUS_OK && code === ERROR_OK) {
+          window.location.href = `/cart/?id=${id}`
+        } else {
+          console.log('error')
+        }
       }
     }
   }
-}
 </script>
 
 <style lang="scss">

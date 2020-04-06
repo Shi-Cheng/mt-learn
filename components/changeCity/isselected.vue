@@ -83,7 +83,6 @@
     methods: {
       querySearchAsync: _.debounce(async function(query, cb) {
         const self = this
-        console.log(query)
         if (query) {
           if (self.cities.length) {
             cb(self.cities.filter(item => item.value.indexOf(query) > -1))

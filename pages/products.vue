@@ -56,7 +56,6 @@
           city
         }
       })
-      console.log(pois)
       if (status === STATUS_OK && count > 0 && status2 === STATUS_OK) {
         return {
           // 先进行过滤出符合要求的内容

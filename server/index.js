@@ -6,6 +6,7 @@ import users from './interface/users.js'
 import geo from './interface/geo.js'
 import search from './interface/search.js'
 import category from './interface/category'
+import cart from './interface/cart'
 import passport from './interface/utils/passport'
 import mongoose from 'mongoose'
 import dbConfig from './dbs/config'
@@ -61,6 +62,7 @@ async function start() {
   app.use(geo.routes()).use(geo.allowedMethods())
   app.use(search.routes()).use(search.allowedMethods())
   app.use(category.routes()).use(category.allowedMethods())
+  app.use(cart.routes()).use(cart.allowedMethods())
   app.use((ctx) => {
     ctx.status = 200
     ctx.respond = false // Bypass Koa's built-in response handling
