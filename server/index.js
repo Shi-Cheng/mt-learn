@@ -3,6 +3,9 @@ const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 
 import users from './interface/users.js'
+import geo from './interface/geo.js'
+import search from './interface/search.js'
+import category from './interface/category'
 import passport from './interface/utils/passport'
 import mongoose from 'mongoose'
 import dbConfig from './dbs/config'
@@ -55,7 +58,9 @@ async function start() {
     await builder.build()
   }
   app.use(users.routes()).use(users.allowedMethods())
-
+  app.use(geo.routes()).use(geo.allowedMethods())
+  app.use(search.routes()).use(search.allowedMethods())
+  app.use(category.routes()).use(category.allowedMethods())
   app.use((ctx) => {
     ctx.status = 200
     ctx.respond = false // Bypass Koa's built-in response handling

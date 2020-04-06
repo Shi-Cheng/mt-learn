@@ -16,7 +16,7 @@ export default {
   // qq POP3/SMTP服务 qfsxuimvloovbjej  IMAP/SMTP服务 mfyytqdduxcjcagh 206301534@qq.com
   // 生成授权码  hkzptaifchgwbidc
 
-  //IMAP/SMTP服务 163 AYZHZHFLUVCECUQN   CZOEDYCFHHATMUAK x_pan2016@163.com
+  // IMAP/SMTP服务 163 AYZHZHFLUVCECUQN   CZOEDYCFHHATMUAK x_pan2016@163.com
   smtp: {
     get host() {
       return 'smtp.qq.com'

@@ -17,18 +17,26 @@
           <button class="el-button el-button--primary"><i class="el-icon-search"/> </button>
           <dl class="hotPlace" v-if="isHotPlace">
             <dt>热门搜索</dt>
-            <dd v-for="(item, idx) in hotPlace" :key="idx" @click="selectItem(item)">{{ item }}</dd>
+            <dd
+              v-for="(item, idx) in $store.state.geo.hotPlace.slice(0, 5)"
+              :key="idx"
+              @click="selectItem(item)">
+            <a :href="'/products?keyword=' + encodeURIComponent(item.name)">{{ item.name }}</a></dd>
           </dl>
           <dl class="searchList" v-if="isSearchList">
-            <dd v-for="(item, idx) in searchList" :key="idx" @click="selectItem(item)">{{ item }}</dd>
+            <dd
+              v-for="(item, idx) in searchList"
+              :key="idx"
+              @click="selectItem(item)">
+            <a :href="'/products?keyword=' + encodeURIComponent(item.name)">{{ item.name }}</a></dd>
           </dl>
         </div>
 
         <p class="suggest">
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
+          <a
+            v-for="(item, idx) in $store.state.geo.hotPlace"
+            :key="idx"
+            :href="'/products?keyword=' + encodeURIComponent(item.name)">{{ item.name }}</a>
         </p>
         <ul class="nav">
           <li>
@@ -60,6 +68,9 @@
 </template>
 
 <script>
+  import _ from 'lodash'
+  import { STATUS_OK } from '../../../server/config/auth'
+
   export default {
     name: 'Search',
     data() {
@@ -88,12 +99,22 @@
           self.ifFocus = false
         }, 200)
       },
-      searchInput(val) {
+      searchInput: _.debounce(async function(val) {
         this.search = val
-      },
-      selectItem(val) {
-        console.log(val)
-      }
+        const self = this
+        const city = self.$store.state.geo.position.city.replace('市', '')
+        self.searchList = []
+        const { status, data: { top }} = await self.$axios.get('/search/top', {
+          params: {
+            input: self.search,
+            city
+          }
+        })
+        if (status === STATUS_OK) {
+          self.searchList = top.slice(0, 10)
+        }
+      }, 300),
+      selectItem(val) {}
     }
   }
 </script>

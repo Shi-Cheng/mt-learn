@@ -171,6 +171,18 @@ router.get('/exit', async (ctx, next) => {
 })
 
 router.get('/getUser', async (ctx) => {
+  // const data = await Users.findOne()
+  // if (data) {
+  //   ctx.body = {
+  //     user: data.username,
+  //     email: data.email
+  //   }
+  // } else {
+  //   ctx.body = {
+  //     user: '',
+  //     email: ''
+  //   }
+  // }
   if (ctx.isAuthenticated()) {
     const { username, email } = ctx.session.passport.user
     ctx.body = {

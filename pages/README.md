@@ -1,5 +1,5 @@
 # PAGES
-
+### 54e995e6e1c9236834e32b486289c224
 This directory contains your Application Views and Routes.
 The framework reads all the `*.vue` files inside this directory and creates the router of your application.
 

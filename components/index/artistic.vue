@@ -41,91 +41,28 @@
 </template>
 
 <script>
-  const OVER_ID = 0
+  import { STATUS_OK } from '../../server/config/auth'
   const DEFAULT_OVER_ID = 1
+  const DEFAULT_TYPE = '景点'
+  const typeListCN = ['景点', '美食', '丽人', '电影', '旅游']
+  const typeListEN = ['first', 'all', 'part', 'spa', 'travel']
   export default {
     name: 'Artistic',
     data() {
       return {
         list: ['有格调', '全部', '约会聚餐', '丽人SPA', '品质出游'],
-        overId: OVER_ID,
-        all: [{
-          title: '东星贝儿凯客生日蛋糕',
-          img: '//p0.meituan.net/bbia/850ce195a4db8d447644429ac6e32c20330100.jpg@368w_208h_1e_1c',
-          pos: '回龙观',
-          price: '58'
-        }, {
-          title: '哈根达斯（东方广场店）',
-          img: '//p1.meituan.net/msmerchant/08adfc2c365fe2ff08e4db1c0155bdf1189139.jpg@368w_208h_1e_1c',
-          pos: '王府井/东单',
-          price: '258'
-        }, {
-          title: '慕巴夫鲜花主题蛋糕（后沙峪店）',
-          img: '//p0.meituan.net/msmerchant/455f8fe67ab4818446dda10061d394ee109929.jpg@368w_208h_1e_1c',
-          pos: '后沙峪',
-          price: '228'
-        }],
-        part: [{
-          title: '东星贝儿凯客生日蛋糕',
-          img: '//p0.meituan.net/msmerchant/b898bb77e76d2acaba804bbd699bfafa793287.jpg@368w_208h_1e_1c',
-          pos: '回龙观',
-          price: '58'
-        }, {
-          title: '哈根达斯（东方广场店）',
-          img: '//p0.meituan.net/bbia/160826548_1584006150926.jpeg@368w_208h_1e_1c',
-          pos: '王府井/东单',
-          price: '258'
-        }, {
-          title: '慕巴夫鲜花主题蛋糕（后沙峪店）',
-          img: '//p0.meituan.net/msmerchant/c08c616aa835bc7cebdc3bd17184afef312214.jpg@368w_208h_1e_1c',
-          pos: '后沙峪',
-          price: '228'
-        }],
-        spa: [{
-          title: '东星贝儿凯客生日蛋糕',
-          img: '//p1.meituan.net/wedding/5096ef2507aa4e2554a38ebab934446f341082.jpg@240w_180h_1e_1c_1l|watermark=1&&r=2&p=9&x=2&y=2&relative=1&o=20|368w_208h_1e_1c',
-          pos: '回龙观',
-          price: '58'
-        }, {
-          title: '哈根达斯（东方广场店）',
-          img: '//p0.meituan.net/wedding/7f274360936a5233902be9afe5054eef4134276.jpg@240w_180h_1e_1c_1l|watermark=1&&r=2&p=9&x=2&y=2&relative=1&o=20|368w_208h_1e_1c',
-          pos: '王府井/东单',
-          price: '258'
-        }, {
-          title: '慕巴夫鲜花主题蛋糕（后沙峪店）',
-          img: '//p0.meituan.net/merchantpic/c4cd218873953a976d9f1c485de2190718522.jpg@240w_180h_1e_1c_1l|watermark=1&&r=2&p=9&x=2&y=2&relative=1&o=20|368w_208h_1e_1c',
-          pos: '后沙峪',
-          price: '228'
-        }],
-        travel: [{
-          title: '东星贝儿凯客生日蛋糕',
-          img: '//p1.meituan.net/tdchotel/8d2d8549f205d79fbc2319f65ac1ff821861291.png@368w_208h_1e_1c',
-          pos: '回龙观',
-          price: '58'
-        }, {
-          title: '哈根达斯（东方广场店）',
-          img: '//p1.meituan.net/dnaimgdark/76af0465f5614ed089227449c9354b674427249.jpg@368w_208h_1e_1c',
-          pos: '王府井/东单',
-          price: '258'
-        }, {
-          title: '慕巴夫鲜花主题蛋糕（后沙峪店）',
-          img: '//p1.meituan.net/tdchotel/bfc639b6a1b6079bb3739b6a92384656424277.jpg@368w_208h_1e_1c',
-          pos: '后沙峪',
-          price: '228'
-        }]
+        overId: DEFAULT_OVER_ID,
+        typeList: {
+          all: [],
+          part: [],
+          spa: [],
+          travel: []
+        }
       }
     },
     computed: {
       cur() {
-        if (!this.overId || this.overId === 1) {
-          return this.all
-        } else if (this.overId === 2) {
-          return this.part
-        } else if (this.overId === 3) {
-          return this.spa
-        } else {
-          return this.travel
-        }
+        return this.typeList[typeListEN[this.overId]]
       },
       getClasses() {
         if (!this.overId) {
@@ -134,9 +71,55 @@
         return this.overId
       }
     },
+    async mounted() {
+      const city = this.$store.state.geo.position.city
+      const self = this
+      const { status, data: { count, pois }} = await self.$axios.get(`/search/resultByKeywords`, {
+        params: {
+          keyword: DEFAULT_TYPE,
+          city: city
+        }
+      })
+      if (status === STATUS_OK && count > 0) {
+        const r = pois.filter(item => item.photos.length).map(item => {
+          return {
+            title: item.name,
+            pos: item.type.split(';')[0],
+            price: item.biz_ext.cost || '暂无',
+            img: item.photos[0].url,
+            url: '//abc.com'
+          }
+        })
+        self.typeList.all = r.slice(0, 9)
+      } else {
+        self.typeList.all = []
+      }
+    },
     methods: {
-      over(idx) {
-        this.overId = idx
+      over: async function(idx) {
+        const self = this
+        self.overId = idx
+        const city = self.$store.state.geo.position.city
+        const { status, data: { count, pois }} = await self.$axios.get(`/search/resultByKeywords`, {
+          params: {
+            keyword: typeListCN[self.overId],
+            city: city
+          }
+        })
+        if (status === STATUS_OK && count > 0) {
+          const r = pois.filter(item => item.photos.length).map(item => {
+            return {
+              title: item.name,
+              pos: item.type.split(';')[0],
+              price: item.biz_ext.cost || '暂无',
+              img: item.photos[0].url,
+              url: '//abc.com'
+            }
+          })
+          self.typeList[typeListEN[self.overId]] = r.slice(0, 10)
+        } else {
+          self.typeList = {}
+        }
       }
     }
   }

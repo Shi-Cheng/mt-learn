@@ -14,7 +14,7 @@
 
 <script>
   import MtHeader from '../components/public/header/index'
-  import MtFooter from '../components/public/footer/footer'
+  import MtFooter from '../components/public/footer/index'
   export default {
     components: {
       MtHeader,
