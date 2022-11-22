@@ -32,7 +32,7 @@
     "nodemailer": "^4.6.8",
     "nodemailer-smtp-transport": "^2.7.4",
     "lodash": "^4.17.15",
-    "nuxt": "^2.0.0",
+    "nuxt": "^2.15.8",
     "passport-local": "^1.0.0",
     "sass-loader": "^8.0.2",
     "js-pinyin": "^0.1.9"
